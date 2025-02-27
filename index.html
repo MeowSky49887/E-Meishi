@@ -32,7 +32,7 @@
             <h2 class="text-lg font-semibold mb-2">Preview:</h2>
             <img id="badgePreview" class="mx-auto" />
             <p class="mt-2"><a id="badgeLink" href="#" target="_blank" class="text-blue-500 underline hidden">Open Generated Badge</a></p>
-            <p id="badgeUrlText" class="mt-2 text-sm text-gray-700 hidden"></p>
+            <pre id="badgeUrlText" class="mt-2 text-sm text-gray-700 bg-gray-200 p-2 rounded hidden"></pre>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
             });
             
             const queryParams = new URLSearchParams(params).toString();
-            const badgeUrl = `http://localhost:3000/badge?${queryParams}`;
+            const badgeUrl = `https://badge-gen.onrender.com/badge?${queryParams}`;
             
             document.getElementById("badgePreview").src = badgeUrl;
             const badgeLink = document.getElementById("badgeLink");
