@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0-beta.9/daisyui.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
+        <h1 class="text-2xl font-bold mb-4 text-center">Badge Generator</h1>
+        <form id="badgeForm" class="space-y-4">
+            <label class="block">Message * <input type="text" id="message" class="w-full h-10 p-2 border rounded" /></label>
+            <label class="block">Label <input type="text" id="label" class="w-full h-10 p-2 border rounded" /></label>
+            <label class="block">Message Color <input type="color" id="color" class="w-full h-10 p-2 border rounded" /></label>
+            <label class="block">Label Color <input type="color" id="labelColor" class="w-full h-10 p-2 border rounded" /></label>
+            <label class="block">Style 
+                <select id="style" class="w-full h-10 p-2 border rounded">
+                    <option value="plastic">Plastic</option>
+                    <option value="flat">Flat</option>
+                    <option value="flat-square">Flat Square</option>
+                    <option value="for-the-badge">For the Badge</option>
+                    <option value="social">Social</option>
+                </select>
+            </label>
+            <label class="block">Image <input type="url" id="img" class="w-full h-10 p-2 border rounded" /></label>
+            <label class="block">Links (comma-separated) <input type="text" id="url" class="w-full h-10 p-2 border rounded" /></label>
+            <button type="submit" class="w-full h-10 bg-blue-500 text-white p-2 rounded">Generate Badge</button>
+        </form>
+        <div class="mt-6 text-center">
+            <h2 class="text-lg font-semibold mb-2">Preview:</h2>
+            <img id="badgePreview" class="mx-auto" />
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("badgeForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const params = {};
+            const fields = ["label", "message", "labelColor", "color", "style", "img", "url"];
+            
+            fields.forEach(field => {
+                const value = document.getElementById(field).value;
+                if (value) {
+                    params[field] = (field === "labelColor" || field === "color") ? value.substring(1) : value;
+                }
+            });
+            
+            const queryParams = new URLSearchParams(params).toString();
+            document.getElementById("badgePreview").src = `http://localhost:3000/badge?${queryParams}`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+{
+  "name": "badge-gen",
+  "version": "2025.0.1",
+  "main": "index.js",
+  "keywords": [
+    "badge",
+    "shield",
+    "github",
+    "markdown",
+    "html"
+  ],
+  "author": "MeowSkyKung",
+  "license": "ISC",
+  "description": "A simple badge generator using Express and badge-maker",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "badge-maker": "^3.3.0"
+  }
+}
