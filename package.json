@@ -1,6 +1,6 @@
 
 {
-  "name": "badge-gen",
+  "name": "e-meishi",
   "version": "2025.0.1",
   "main": "index.js",
   "keywords": [
@@ -12,7 +12,7 @@
   ],
   "author": "MeowSkyKung",
   "license": "ISC",
-  "description": "A simple badge generator using Express and badge-maker",
+  "description": "A simple name card tools for GitHub.",
   "type": "module",
   "dependencies": {
     "express": "^4.21.2",
