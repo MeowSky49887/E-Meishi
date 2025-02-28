@@ -3,4 +3,4 @@
 e-meishi
 ===========
 
-> A simple badge generator using Express and badge-maker
+> A simple name card tools for GitHub.
