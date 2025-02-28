@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import express from "express";
 import { makeBadge } from "badge-maker";
+const { generateRepoCard, generateGistCard } = require("github-card");
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -23,7 +24,6 @@ app.get("/badge", async (req, res) => {
             logoBase64 = "data:image/svg+xml;base64," + Buffer.from(buffer).toString("base64");
         }
 
-        // Construct badge options dynamically
         const badgeOptions = { };
         if (message && message.trim() != "") {badgeOptions.message = message} else {badgeOptions.message = "Badge"};
         if (color && color.trim() != "") badgeOptions.color = color;
@@ -41,7 +41,44 @@ app.get("/badge", async (req, res) => {
     }
 });
 
-// Serve the HTML UI at the root URL "/"
+app.get("/repo", async (req, res) => {
+    try {
+        const { name, cardBackground, cardBorder, titleColor, textColor, codeBackground, codeColor } = req.query;
+
+        const theme = { }
+        if (cardBackground && cardBackground.trim() != "") theme.cardBackground = cardBackground;
+        if (cardBorder && cardBorder.trim() != "") theme.cardBorder = cardBorder;
+        if (titleColor && titleColor.trim() != "") theme.titleColor = titleColor;
+        if (textColor && textColor.trim() != "") theme.textColor = textColor;
+        if (codeBackground && codeBackground.trim() != "") theme.codeBackground = codeBackground;
+        if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
+
+        const card = await generateRepoCard(name, theme);
+        res.type("svg").send(card);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/gist", async (req, res) => {
+    try {
+        const { id, cardBackground, cardBorder, titleColor, textColor, codeBackground, codeColor } = req.query;
+
+        const theme = { }
+        if (cardBackground && cardBackground.trim() != "") theme.cardBackground = cardBackground;
+        if (cardBorder && cardBorder.trim() != "") theme.cardBorder = cardBorder;
+        if (titleColor && titleColor.trim() != "") theme.titleColor = titleColor;
+        if (textColor && textColor.trim() != "") theme.textColor = textColor;
+        if (codeBackground && codeBackground.trim() != "") theme.codeBackground = codeBackground;
+        if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
+
+        const card = await generateRepoCard(id, theme);
+        res.type("svg").send(card);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
