@@ -17,6 +17,7 @@
   "dependencies": {
     "express": "^4.21.2",
     "node-fetch": "^3.3.2",
-    "badge-maker": "^4.1.0"
+    "badge-maker": "^4.1.0",
+    "github-card": "github:MeowSky49887/Github-Card"
   }
 }
