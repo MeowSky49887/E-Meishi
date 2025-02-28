@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import express from "express";
 import { makeBadge } from "badge-maker";
-const { generateRepoCard, generateGistCard } = require("github-card");
+import { generateRepoCard, generateGistCard } from "github-card";
 import path from "path";
 import { fileURLToPath } from "url";
 
