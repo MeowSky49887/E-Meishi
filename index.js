@@ -35,7 +35,7 @@ app.get("/badge", async (req, res) => {
         if (id && id.trim() != "") badgeOptions.idSuffix = id;
 
         const badge = makeBadge(badgeOptions);
-        res.type("svg").send(badge);
+        res.type("image/svg+xml").send(badge);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -43,7 +43,7 @@ app.get("/badge", async (req, res) => {
 
 app.get("/repo", async (req, res) => {
     try {
-        const { name, cardBackground, cardBorder, titleColor, textColor, codeBackground, codeColor } = req.query;
+        const { owner, name, cardBackground, cardBorder, titleColor, textColor, codeBackground, codeColor } = req.query;
 
         const theme = { }
         if (cardBackground && cardBackground.trim() != "") theme.cardBackground = cardBackground;
@@ -53,8 +53,8 @@ app.get("/repo", async (req, res) => {
         if (codeBackground && codeBackground.trim() != "") theme.codeBackground = codeBackground;
         if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
 
-        const card = await generateRepoCard(name, theme);
-        res.type("svg").send(card);
+        const card = await generateRepoCard(owner, name, theme);
+        res.type("image/svg+xml").send(card);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -73,7 +73,7 @@ app.get("/gist", async (req, res) => {
         if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
 
         const card = await generateGistCard(id, theme);
-        res.type("svg").send(card);
+        res.type("image/svg+xml").send(card);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
