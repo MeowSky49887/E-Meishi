@@ -72,7 +72,7 @@ app.get("/gist", async (req, res) => {
         if (codeBackground && codeBackground.trim() != "") theme.codeBackground = codeBackground;
         if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
 
-        const card = await generateRepoCard(id, theme);
+        const card = await generateGistCard(id, theme);
         res.type("svg").send(card);
     } catch (error) {
         res.status(500).json({ error: error.message });
