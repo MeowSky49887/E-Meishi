@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import express from "express";
 import { makeBadge } from "badge-maker";
-import { generateRepoCard, generateGistCard } from "github-card";
+import { generateRepoCard, generateGistCard, generateSpaceCard } from "github-card";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -79,6 +79,17 @@ app.get("/gist", async (req, res) => {
     }
 });
 
+app.get("/space", async (req, res) => {
+    try {
+        const { owner, name } = req.query;
+
+        const card = await generateSpaceCard(owner, name);
+        res.type("image/svg+xml").send(card);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
@@ -86,3 +97,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
+
