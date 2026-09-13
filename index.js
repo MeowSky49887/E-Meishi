@@ -1,9 +1,10 @@
 import fetch from "node-fetch";
 import express from "express";
 import { makeBadge } from "badge-maker";
-import { generateRepoCard, generateGistCard, generateSpaceCard } from "github-card";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import { generateRepoCard, generateGistCard, generateModelCard, generateDatasetCard, generateSpaceCard } from "./card/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,15 +44,13 @@ app.get("/badge", async (req, res) => {
 
 app.get("/repo", async (req, res) => {
     try {
-        const { owner, name, cardBackground, cardBorder, titleColor, textColor, codeBackground, codeColor } = req.query;
+        const { owner, name, cardBackground, cardBorder, titleColor, textColor } = req.query;
 
         const theme = { }
         if (cardBackground && cardBackground.trim() != "") theme.cardBackground = cardBackground;
         if (cardBorder && cardBorder.trim() != "") theme.cardBorder = cardBorder;
         if (titleColor && titleColor.trim() != "") theme.titleColor = titleColor;
         if (textColor && textColor.trim() != "") theme.textColor = textColor;
-        if (codeBackground && codeBackground.trim() != "") theme.codeBackground = codeBackground;
-        if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
 
         const card = await generateRepoCard(owner, name, theme);
         res.type("image/svg+xml").send(card);
@@ -73,6 +72,44 @@ app.get("/gist", async (req, res) => {
         if (codeColor && codeColor.trim() != "") theme.codeColor = codeColor;
 
         const card = await generateGistCard(id, theme);
+        res.type("image/svg+xml").send(card);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/model", async (req, res) => {
+    try {
+        const { owner, name, fromColor, viaColor, toColor, borderColor, titleColor, textColor } = req.query;
+
+        const theme = { }
+        if (fromColor && fromColor.trim() != "") theme.fromColor = fromColor;
+        if (viaColor && viaColor.trim() != "") theme.viaColor = viaColor;
+        if (toColor && toColor.trim() != "") theme.toColor = toColor;
+        if (borderColor && borderColor.trim() != "") theme.borderColor = borderColor;
+        if (titleColor && titleColor.trim() != "") theme.titleColor = titleColor;
+        if (textColor && textColor.trim() != "") theme.textColor = textColor;
+
+        const card = await generateModelCard(owner, name, theme);
+        res.type("image/svg+xml").send(card);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/datset", async (req, res) => {
+    try {
+        const { owner, name, fromColor, viaColor, toColor, borderColor, titleColor, textColor } = req.query;
+
+        const theme = { }
+        if (fromColor && fromColor.trim() != "") theme.fromColor = fromColor;
+        if (viaColor && viaColor.trim() != "") theme.viaColor = viaColor;
+        if (toColor && toColor.trim() != "") theme.toColor = toColor;
+        if (borderColor && borderColor.trim() != "") theme.borderColor = borderColor;
+        if (titleColor && titleColor.trim() != "") theme.titleColor = titleColor;
+        if (textColor && textColor.trim() != "") theme.textColor = textColor;
+
+        const card = await generateDatasetCard(owner, name, theme);
         res.type("image/svg+xml").send(card);
     } catch (error) {
         res.status(500).json({ error: error.message });

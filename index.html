@@ -1,70 +1,785 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Meishi</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0-beta.9/daisyui.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="flex items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
-    <div class="flex flex-col md:flex-row w-full max-w-4xl gap-4">
-        <div class="min-h-[40vh] md:w-1/2 bg-gray-800 shadow-md rounded-lg p-4 flex flex-col items-center sticky top-4 border-2 border-transparent">
-            <h1 class="text-xl font-semibold text-center bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">Preview</h1>
-            <div class="relative w-full h-full px-8 py-4 border-4 border-transparent shadow-lg flex justify-end">
-                <button id="copyButton" class="absolute top-8 right-12 btn btn-ghost btn-square text-white hover:bg-transparent hover:border-transparent items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
-                    </svg>
-                </button>
-                <img id="badgePreview" class="mx-auto w-full h-full object-contain" />
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>E-Meishi</title>
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0-beta.9/daisyui.css"
+            rel="stylesheet"
+        />
+
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+
+    <body class="flex items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
+
+        <div class="flex flex-col md:flex-row w-full max-w-5xl gap-4">
+
+            <!-- Preview -->
+            <div class="min-h-[40vh] md:w-1/2 bg-gray-800 shadow-md rounded-lg p-4 flex flex-col items-center sticky top-4 border-2 border-transparent">
+
+                <h1 class="text-xl font-semibold text-center bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                    Preview
+                </h1>
+
+                <div class="relative w-full min-h-[300px] p-8 border-4 border-transparent shadow-lg flex justify-end">
+
+                    <button
+                        id="copyButton"
+                        type="button"
+                        class="absolute top-4 right-4 btn btn-ghost btn-square text-white hover:bg-transparent hover:border-transparent items-center justify-center"
+                        title="Copy URL"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="size-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                            />
+                        </svg>
+                    </button>
+
+                    <img
+                        id="badgePreview"
+                        class="mx-auto w-full h-full object-contain"
+                        alt="Generated preview"
+                    />
+                </div>
+
+                <p id="status" class="text-sm text-gray-400 text-center mt-2"></p>
             </div>
-        </div>
-        <div class="min-h-[40vh] md:w-1/2 bg-gray-800 shadow-md rounded-lg p-4">
-            <h1 class="text-xl font-semibold text-center mb-3 bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">Badge Generator</h1>
-            <form id="badgeForm" class="space-y-3">
-                <div class="flex gap-2">
-                    <label class="w-2/3">Right Side (Message) * <input type="text" id="message" placeholder="Required" class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2" required autocomplete="off" /></label>
-                    <label class="w-1/3"> <span class="invisible">.</span> <input type="color" id="color" class="w-full h-10 border-2 border-transparent mt-2" autocomplete="off" /></label>
-                </div>
-                <div class="flex gap-2">
-                    <label class="w-2/3">Left Side (Label)<input type="text" id="label" placeholder="Optional" class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2" autocomplete="off" /></label>
-                    <label class="w-1/3"> <span class="invisible">.</span> <input type="color" id="labelColor" class="w-full h-10 border-2 border-transparent" autocomplete="off" /></label>
-                </div>
-                <label class="block">Style
-                    <select id="style" class="select select-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2" autocomplete="off">
-                        <option value="plastic">Plastic</option>
-                        <option value="flat">Flat</option>
-                        <option value="flat-square">Flat Square</option>
-                        <option value="for-the-badge">For the Badge</option>
-                        <option value="social">Social</option>
+
+
+            <!-- Generator -->
+            <div class="min-h-[40vh] md:w-1/2 bg-gray-800 shadow-md rounded-lg p-4">
+
+                <h1 class="text-xl font-semibold text-center mb-3 bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    E-Meishi Generator
+                </h1>
+
+
+                <!-- Generator Type -->
+                <label class="block mb-4">
+                    Generator Type
+
+                    <select
+                        id="generator"
+                        class="select select-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                    >
+                        <option value="badge">Badge</option>
+                        <option value="repo">Repository Card</option>
+                        <option value="gist">Gist Card</option>
+                        <option value="model">Model Card</option>
+                        <option value="dataset">Dataset Card</option>
+                        <option value="space">Space Card</option>
                     </select>
                 </label>
-                <label class="block">Image URL <input type="url" id="img" placeholder="Optional" class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2" autocomplete="off" /></label>
-                <label class="block">Links (comma-separated) <input type="text" id="url" placeholder="Optional" class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2" autocomplete="off" /></label>
-                <button type="submit" class="btn w-full border-2 border-transparent mt-2">Generate Badge</button>
-            </form>
+
+
+                <!-- ================= BADGE ================= -->
+                <form id="badgeForm" class="generator-form space-y-3">
+
+                    <div class="flex gap-2">
+
+                        <label class="w-2/3">
+                            Right Side (Message) *
+
+                            <input
+                                type="text"
+                                id="message"
+                                placeholder="Badge"
+                                class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                        <label class="w-1/3">
+                            Message Color
+
+                            <input
+                                type="color"
+                                id="color"
+                                value="#007ec6"
+                                class="w-full h-10 border-2 border-transparent mt-2"
+                            />
+                        </label>
+
+                    </div>
+
+
+                    <div class="flex gap-2">
+
+                        <label class="w-2/3">
+                            Left Side (Label)
+
+                            <input
+                                type="text"
+                                id="label"
+                                placeholder="Optional"
+                                class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                        <label class="w-1/3">
+                            Label Color
+
+                            <input
+                                type="color"
+                                id="labelColor"
+                                value="#555555"
+                                class="w-full h-10 border-2 border-transparent mt-2"
+                            />
+                        </label>
+
+                    </div>
+
+
+                    <label class="block">
+                        Style
+
+                        <select
+                            id="style"
+                            class="select select-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                        >
+                            <option value="plastic">Plastic</option>
+                            <option value="flat">Flat</option>
+                            <option value="flat-square">Flat Square</option>
+                            <option value="for-the-badge">For the Badge</option>
+                            <option value="social">Social</option>
+                        </select>
+                    </label>
+
+
+                    <label class="block">
+                        Image URL
+
+                        <input
+                            type="url"
+                            id="img"
+                            placeholder="Optional"
+                            class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                            autocomplete="off"
+                        />
+                    </label>
+
+
+                    <label class="block">
+                        Links (comma-separated)
+
+                        <input
+                            type="text"
+                            id="url"
+                            placeholder="Optional"
+                            class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                            autocomplete="off"
+                        />
+                    </label>
+
+
+                    <label class="block" hidden>
+                        ID Suffix
+
+                        <input
+                            type="text"
+                            id="badgeId"
+                            placeholder="Optional"
+                            class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                            autocomplete="off"
+                        />
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="btn w-full border-2 border-transparent mt-2"
+                    >
+                        Generate Badge
+                    </button>
+
+                </form>
+
+
+                <!-- ================= CARD FORMS ================= -->
+
+                <form id="cardForm" class="generator-form hidden space-y-3">
+
+                    <!-- Owner / Name -->
+                    <div id="ownerNameFields" class="flex gap-2">
+
+                        <label class="w-1/2">
+                            Owner
+
+                            <input
+                                type="text"
+                                id="owner"
+                                placeholder="username"
+                                class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                        <label class="w-1/2">
+                            Name
+
+                            <input
+                                type="text"
+                                id="name"
+                                placeholder="repository"
+                                class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                    </div>
+
+
+                    <!-- Gist ID -->
+                    <label id="gistIdField" class="block hidden">
+                        Gist ID
+
+                        <input
+                            type="text"
+                            id="gistId"
+                            placeholder="Gist ID"
+                            class="input input-bordered w-full bg-gray-700 text-white border-2 border-transparent mt-2"
+                            autocomplete="off"
+                        />
+                    </label>
+
+
+                    <!-- Card Theme -->
+                    <div id="cardTheme" class="space-y-3">
+
+                        <h2 class="text-sm font-semibold text-gray-300">
+                            Card Theme
+                        </h2>
+
+                        <div class="grid grid-cols-2 gap-2">
+
+                            <label>
+                                Card Background
+
+                                <input
+                                    type="color"
+                                    id="cardBackground"
+                                    value="#0d1117"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Card Border
+
+                                <input
+                                    type="color"
+                                    id="cardBorder"
+                                    value="#3d444d"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Title Color
+
+                                <input
+                                    type="color"
+                                    id="titleColor"
+                                    value="#4493f8"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Text Color
+
+                                <input
+                                    type="color"
+                                    id="textColor"
+                                    value="#9198a1"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Code Background
+
+                                <input
+                                    type="color"
+                                    id="codeBackground"
+                                    value="#151b23"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Code Color
+
+                                <input
+                                    type="color"
+                                    id="codeColor"
+                                    value="#ffffff"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Model / Dataset Theme -->
+                    <div id="gradientTheme" class="hidden space-y-3">
+
+                        <h2 class="text-sm font-semibold text-gray-300">
+                            Gradient Theme
+                        </h2>
+
+                        <div class="grid grid-cols-2 gap-2">
+
+                            <label>
+                                From Color
+
+                                <input
+                                    type="color"
+                                    id="fromColor"
+                                    value="#101828"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Via Color
+
+                                <input
+                                    type="color"
+                                    id="viaColor"
+                                    value="#0b0f19"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                To Color
+
+                                <input
+                                    type="color"
+                                    id="toColor"
+                                    value="#0b0f19"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Border Color
+
+                                <input
+                                    type="color"
+                                    id="borderColor"
+                                    value="#141c2e"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Title Color
+
+                                <input
+                                    type="color"
+                                    id="gradientTitleColor"
+                                    value="#e5e7eb"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                            <label>
+                                Text Color
+
+                                <input
+                                    type="color"
+                                    id="gradientTextColor"
+                                    value="#99a1af"
+                                    class="w-full h-10 mt-2"
+                                />
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn w-full border-2 border-transparent mt-2"
+                    >
+                        Generate Card
+                    </button>
+
+                </form>
+
+            </div>
+
         </div>
-    </div>
-    <script>
-        document.getElementById("badgeForm").addEventListener("submit", function(event) {
+
+        <script>
+
+        const API_BASE = window.location.origin;
+
+        const generator = document.getElementById("generator");
+
+        const badgeForm = document.getElementById("badgeForm");
+        const cardForm = document.getElementById("cardForm");
+
+        const ownerNameFields = document.getElementById("ownerNameFields");
+        const gistIdField = document.getElementById("gistIdField");
+
+        const cardTheme = document.getElementById("cardTheme");
+        const gradientTheme = document.getElementById("gradientTheme");
+
+        const codeBackgroundField = document.getElementById("codeBackground");
+        const codeColorField = document.getElementById("codeColor");
+
+        const preview = document.getElementById("badgePreview");
+        const status = document.getElementById("status");
+
+        let currentUrl = "";
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generator selector
+        |--------------------------------------------------------------------------
+        */
+
+        generator.addEventListener("change", updateForm);
+
+        function updateForm() {
+
+            const type = generator.value;
+
+            badgeForm.classList.toggle("hidden", type !== "badge");
+            cardForm.classList.toggle("hidden", type === "badge");
+
+            ownerNameFields.classList.toggle(
+                "hidden",
+                type === "gist"
+            );
+
+            gistIdField.classList.toggle(
+                "hidden",
+                type !== "gist"
+            );
+
+            cardTheme.classList.toggle(
+                "hidden",
+                !(type === "repo" || type === "gist")
+            );
+
+            cardTheme.classList.toggle(
+                "hidden",
+                !(type === "repo" || type === "gist")
+            );
+
+            gradientTheme.classList.toggle(
+                "hidden",
+                !(type === "model" || type === "dataset")
+            );
+
+            codeBackgroundField.classList.toggle(
+                "hidden",
+                type !== "gist"
+            );
+
+            codeColor.classList.toggle(
+                "hidden",
+                type !== "gist"
+            );
+
+            if (type === "space") {
+                document.querySelector("#cardForm button").textContent =
+                    "Generate Space Card";
+            } else if (type === "gist") {
+                document.querySelector("#cardForm button").textContent =
+                    "Generate Gist Card";
+            } else if (type === "model") {
+                document.querySelector("#cardForm button").textContent =
+                    "Generate Model Card";
+            } else if (type === "dataset") {
+                document.querySelector("#cardForm button").textContent =
+                    "Generate Dataset Card";
+            } else {
+                document.querySelector("#cardForm button").textContent =
+                    "Generate Repository Card";
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Helper
+        |--------------------------------------------------------------------------
+        */
+
+        function getValue(id) {
+
+            const element = document.getElementById(id);
+
+            if (!element) return "";
+
+            return element.value.trim();
+        }
+
+
+        function addParam(params, name, id) {
+
+            const value = getValue(id);
+
+            if (value !== "") {
+                params[name] = value;
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Badge
+        |--------------------------------------------------------------------------
+        */
+
+        badgeForm.addEventListener("submit", function(event) {
+
             event.preventDefault();
+
             const params = {};
-            ["label", "message", "labelColor", "color", "style", "img", "url"].forEach(field => {
-                const value = document.getElementById(field).value;
-                if (value) params[field] = (field.includes("Color")) ? value.substring(1) : value;
-            });
-            const badgeUrl = `https://e-meishi.vercel.app/badge?${new URLSearchParams(params)}`;
-            document.getElementById("badgePreview").src = badgeUrl;
+
+            addParam(params, "message", "message");
+            addParam(params, "label", "label");
+            addParam(params, "style", "style");
+            addParam(params, "img", "img");
+            addParam(params, "url", "url");
+            addParam(params, "id", "badgeId");
+
+            const color = getValue("color");
+            const labelColor = getValue("labelColor");
+
+            if (color) {
+                params.color = color.replace("#", "");
+            }
+
+            if (labelColor) {
+                params.labelColor = labelColor.replace("#", "");
+            }
+
+            if (!params.message) {
+                params.message = "Badge";
+            }
+
+            generate("/badge", params);
         });
 
-        document.getElementById("copyButton").addEventListener("click", function() {
-            const badgeUrl = document.getElementById("badgePreview").src;
-            navigator.clipboard.writeText(badgeUrl).then(() => {
-            }).catch(err => {
-                console.error("Error copying URL: ", err);
-            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Card generators
+        |--------------------------------------------------------------------------
+        */
+
+        cardForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const type = generator.value;
+
+            const params = {};
+
+            let endpoint = "";
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Repository
+            |--------------------------------------------------------------------------
+            */
+
+            if (type === "repo") {
+
+                endpoint = "/repo";
+
+                addParam(params, "owner", "owner");
+                addParam(params, "name", "name");
+
+                addParam(params, "cardBackground", "cardBackground");
+                addParam(params, "cardBorder", "cardBorder");
+                addParam(params, "titleColor", "titleColor");
+                addParam(params, "textColor", "textColor");
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Gist
+            |--------------------------------------------------------------------------
+            */
+
+            else if (type === "gist") {
+
+                endpoint = "/gist";
+
+                addParam(params, "id", "gistId");
+
+                addParam(params, "cardBackground", "cardBackground");
+                addParam(params, "cardBorder", "cardBorder");
+                addParam(params, "titleColor", "titleColor");
+                addParam(params, "textColor", "textColor");
+                addParam(params, "codeBackground", "codeBackground");
+                addParam(params, "codeColor", "codeColor");
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Model
+            |--------------------------------------------------------------------------
+            */
+
+            else if (type === "model") {
+
+                endpoint = "/model";
+
+                addParam(params, "owner", "owner");
+                addParam(params, "name", "name");
+
+                addParam(params, "fromColor", "fromColor");
+                addParam(params, "viaColor", "viaColor");
+                addParam(params, "toColor", "toColor");
+                addParam(params, "borderColor", "borderColor");
+
+                addParam(params, "titleColor", "gradientTitleColor");
+                addParam(params, "textColor", "gradientTextColor");
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Dataset
+            |--------------------------------------------------------------------------
+            */
+
+            else if (type === "dataset") {
+
+                endpoint = "/datset";
+
+                addParam(params, "owner", "owner");
+                addParam(params, "name", "name");
+
+                addParam(params, "fromColor", "fromColor");
+                addParam(params, "viaColor", "viaColor");
+                addParam(params, "toColor", "toColor");
+                addParam(params, "borderColor", "borderColor");
+
+                addParam(params, "titleColor", "gradientTitleColor");
+                addParam(params, "textColor", "gradientTextColor");
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Space
+            |--------------------------------------------------------------------------
+            */
+
+            else if (type === "space") {
+
+                endpoint = "/space";
+
+                addParam(params, "owner", "owner");
+                addParam(params, "name", "name");
+            }
+
+
+            generate(endpoint, params);
+
         });
-    </script>
-</body>
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate image
+        |--------------------------------------------------------------------------
+        */
+
+        function generate(endpoint, params) {
+
+            const query = new URLSearchParams(params);
+
+            currentUrl = `${API_BASE}${endpoint}?${query.toString()}`;
+
+            status.textContent = "Generating...";
+
+            preview.onload = function() {
+                status.textContent = "Generated successfully";
+            };
+
+            preview.onerror = function() {
+                status.textContent = "Failed to generate preview";
+            };
+
+            preview.src = currentUrl;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Copy URL
+        |--------------------------------------------------------------------------
+        */
+
+        document.getElementById("copyButton").addEventListener(
+            "click",
+            async function() {
+
+                if (!currentUrl) {
+
+                    status.textContent = "Generate something first";
+
+                    return;
+                }
+
+                try {
+
+                    await navigator.clipboard.writeText(currentUrl);
+
+                    status.textContent = "URL copied!";
+
+                } catch (error) {
+
+                    console.error("Error copying URL:", error);
+
+                    status.textContent = "Unable to copy URL";
+                }
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Initial state
+        |--------------------------------------------------------------------------
+        */
+
+        updateForm();
+
+        </script>
+
+    </body>
 </html>

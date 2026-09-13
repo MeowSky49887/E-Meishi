@@ -1,0 +1,201 @@
+import fetch from "node-fetch";
+import escapeHtml from "escape-html";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const REPO_TEMPLATE_FILE = path.join(__dirname, "repo.svg");
+const GIST_TEMPLATE_FILE = path.join(__dirname, "gist.svg");
+const MODEL_TEMPLATE_FILE = path.join(__dirname, "model.svg");
+const DATASET_TEMPLATE_FILE = path.join(__dirname, "dataset.svg");
+const SPACE_TEMPLATE_FILE = path.join(__dirname, "space.svg");
+
+const cache = {};
+const CACHE_TIMEOUT = 3600000; // 1 hour
+
+async function get(url) {
+    const now = Date.now();
+
+    if (cache[url] && Math.abs(now - cache[url].time) < CACHE_TIMEOUT) {
+        return cache[url].data;
+    }
+
+    const resp = await fetch(url);
+    if (!resp.ok) {
+        throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
+    }
+
+    const json = await resp.json();
+
+    cache[url] = { time: now, data: json };
+
+    return json;
+}
+
+function formatNumber(num) {
+    return new Intl.NumberFormat("en", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(num);
+}
+
+function formatDate(utcString) {
+    return new Date(utcString).toLocaleDateString();
+}
+
+// Generate Repository Card
+async function generateRepoCard(repoOwner, repoName, theme = {}) {
+    const defaultTheme = {
+        cardBackground: '#0d1117',
+        cardBorder: '#3d444d',
+        titleColor: '#4493f8',
+        textColor: '#9198a1'
+    };
+
+    const finalTheme = { ...defaultTheme, ...theme };
+
+    const colors = await get("https://raw.githubusercontent.com/ozh/github-colors/master/colors.json");
+    const data = await get(`https://api.github.com/repos/${repoOwner}/${repoName}`);
+
+    let svgTemplate = fs.readFileSync(REPO_TEMPLATE_FILE, "utf-8");
+
+    svgTemplate = svgTemplate
+        .replaceAll("{{cardBackground}}", finalTheme.cardBackground)
+        .replaceAll("{{cardBorder}}", finalTheme.cardBorder)
+        .replaceAll("{{titleColor}}", finalTheme.titleColor)
+        .replaceAll("{{textColor}}", finalTheme.textColor)
+        .replaceAll("{{url}}", data.html_url)
+        .replaceAll("{{owner}}", escapeHtml(data.owner.login))
+        .replaceAll("{{name}}", escapeHtml(data.name))
+        .replaceAll("{{description}}", escapeHtml(data.description))
+        .replaceAll("{{language}}", data.language || "Unknown")
+        .replaceAll("{{languageColor}}", data.language ? (colors[data.language]?.color || "#ffffff") : "#ffffff")
+        .replaceAll("{{stars}}", formatNumber(data.stargazers_count))
+        .replaceAll("{{forks}}", formatNumber(data.forks_count))
+        .replaceAll("{{updatedAt}}", formatDate(data.updated_at));
+
+    return svgTemplate;
+}
+
+// Generate Gist Card
+async function generateGistCard(gistId, theme = {}) {
+    const defaultTheme = {
+        cardBackground: '#0d1117',
+        cardBorder: '#3d444d',
+        titleColor: '#4493f8',
+        textColor: '#9198a1',
+        codeBackground: '#151b23',
+        codeColor: '#ffffff'
+    };
+
+    const finalTheme = { ...defaultTheme, ...theme };
+
+    const data = await get(`https://api.github.com/gists/${gistId}`);
+
+    let svgTemplate = fs.readFileSync(GIST_TEMPLATE_FILE, "utf-8");
+
+    svgTemplate = svgTemplate
+        .replaceAll("{{cardBackground}}", finalTheme.cardBackground)
+        .replaceAll("{{cardBorder}}", finalTheme.cardBorder)
+        .replaceAll("{{titleColor}}", finalTheme.titleColor)
+        .replaceAll("{{textColor}}", finalTheme.textColor)
+        .replaceAll("{{codeBackground}}", finalTheme.codeBackground)
+        .replaceAll("{{codeColor}}", finalTheme.codeColor)
+        .replaceAll("{{url}}", data.html_url)
+        .replaceAll("{{owner}}", escapeHtml(data.owner.login))
+        .replaceAll("{{name}}", escapeHtml(data.description) || escapeHtml(data.files[Object.keys(data.files)[0]].filename))
+        .replaceAll("{{content}}", escapeHtml(data.files[Object.keys(data.files)[0]].content))
+
+    return svgTemplate;
+}
+
+// Generate Model Card
+async function generateModelCard(modelOwner, modelName, theme = {}) {
+    const defaultTheme = {
+        fromColor: '#101828',
+        viaColor: '#0b0f19',
+        toColor: '#0b0f19',
+        borderColor: '#141c2e',
+        titleColor: '#e5e7eb',
+        textColor: '#99a1af'
+    };
+
+    const finalTheme = { ...defaultTheme, ...theme };
+
+    const data = await get(`https://huggingface.co/api/models/${modelOwner}/${modelName}`);
+
+    let svgTemplate = fs.readFileSync(MODEL_TEMPLATE_FILE, "utf-8");
+
+    svgTemplate = svgTemplate
+        .replaceAll("{{fromColor}}", escapeHtml(finalTheme.fromColor))
+        .replaceAll("{{viaColor}}", escapeHtml(finalTheme.viaColor))
+        .replaceAll("{{toColor}}", escapeHtml(finalTheme.toColor))
+        .replaceAll("{{borderColor}}", escapeHtml(finalTheme.borderColor))
+        .replaceAll("{{titleColor}}", escapeHtml(finalTheme.titleColor))
+        .replaceAll("{{textColor}}", escapeHtml(finalTheme.textColor))
+        .replaceAll("{{id}}", escapeHtml(data.id))
+        .replaceAll("{{updatedAt}}", formatDate(data.lastModified))
+        .replaceAll("{{downloads}}", formatNumber(data.downloads))
+        .replaceAll("{{likes}}", formatNumber(data.likes));
+
+    return svgTemplate;
+}
+
+// Generate Dataset Card
+async function generateDatasetCard(datasetOwner, datasetName, theme = {}) {
+    const defaultTheme = {
+        fromColor: '#101828',
+        viaColor: '#0b0f19',
+        toColor: '#0b0f19',
+        borderColor: '#141c2e',
+        titleColor: '#e5e7eb',
+        textColor: '#99a1af'
+    };
+
+    const finalTheme = { ...defaultTheme, ...theme };
+
+    const data = await get(`https://huggingface.co/api/datasets/${datasetOwner}/${datasetName}`);
+
+    let svgTemplate = fs.readFileSync(DATASET_TEMPLATE_FILE, "utf-8");
+
+    svgTemplate = svgTemplate
+        .replaceAll("{{fromColor}}", escapeHtml(finalTheme.fromColor))
+        .replaceAll("{{viaColor}}", escapeHtml(finalTheme.viaColor))
+        .replaceAll("{{toColor}}", escapeHtml(finalTheme.toColor))
+        .replaceAll("{{borderColor}}", escapeHtml(finalTheme.borderColor))
+        .replaceAll("{{titleColor}}", escapeHtml(finalTheme.titleColor))
+        .replaceAll("{{textColor}}", escapeHtml(finalTheme.textColor))
+        .replaceAll("{{id}}", escapeHtml(data.id))
+        .replaceAll("{{updatedAt}}", formatDate(data.lastModified))
+        .replaceAll("{{downloads}}", formatNumber(data.downloads))
+        .replaceAll("{{likes}}", formatNumber(data.likes));
+
+    return svgTemplate;
+}
+
+// Generate Space Card
+async function generateSpaceCard(spaceOwner, spaceName) {
+    const data = await get(`https://huggingface.co/api/spaces/${spaceOwner}/${spaceName}`);
+
+    let svgTemplate = fs.readFileSync(SPACE_TEMPLATE_FILE, "utf-8");
+
+    svgTemplate = svgTemplate
+        .replaceAll("{{fromColor}}", escapeHtml(data.cardData.colorFrom))
+        .replaceAll("{{toColor}}", escapeHtml(data.cardData.colorTo))
+        .replaceAll("{{likes}}", formatNumber(data.likes))
+        .replaceAll("{{title}}", escapeHtml(data.cardData.title))
+        .replaceAll("{{emoji}}", escapeHtml(data.cardData.emoji))
+        .replaceAll("{{description}}", escapeHtml(data.cardData.short_description))
+        .replaceAll("{{owner}}", escapeHtml(data.author))
+        .replaceAll("{{updatedAt}}", formatDate(data.lastModified));
+
+    return svgTemplate;
+}
+
+export {
+  generateRepoCard,
+  generateGistCard,
+  generateModelCard,
+  generateDatasetCard,
+  generateSpaceCard
+};
